@@ -11,11 +11,13 @@ contract Queue {
 	/* State variables */
 	uint8 size = 5;
 	// YOUR CODE HERE
-	uint8 timeLimit = 200;
+	uint timeLimit = 200;
+
 	struct Order {
 		address owner;
 		uint timestamp;  // the timestamp the order becomes first in the queue
 	}
+	
 	uint8 curNumber = 0;
 	Order[] storage orders;
 

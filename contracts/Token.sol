@@ -13,9 +13,20 @@ contract Token is ERC20Interface {
 	mapping (address => uint256) balanceBook;
 	uint256 public totalSupply = 200;
 
+    address owner;
+
+    function Token() {
+        owner = msg.sender;
+        totalSupply = 10000;
+    }
+
 	function balanceOf(address _owner) constant returns (uint256 balance) {
 		return balanceBook[_owner];
 	}
+
+    function addTokens(uint amount) {
+        totalSupply += amount;
+    }
 
 	/// @notice send `_value` token to `_to` from `msg.sender`
     /// @param _to The address of the recipient
@@ -23,9 +34,11 @@ contract Token is ERC20Interface {
     /// @return Whether the transfer was successful or not
     function transfer(address _to, uint256 _value) returns (bool success) {
     	// check sender has enough money
-    	emit Transfer(msg.sender, _to, _value);
+    	
     	if (balanceBook[msg.sender] < _value) return false;
-    	balanceBook[msg.sender] -= _value;
+    	if (balanceBook[_to] + _value < balanceBook[_to]) return false;
+        Transfer(msg.sender, _to, _value);
+        balanceBook[msg.sender] -= _value;
     	balanceBook[_to] += _value;
     	return true;
     }
@@ -38,7 +51,9 @@ contract Token is ERC20Interface {
     function transferFrom(address _from, address _to, uint256 _value) returns (bool success) {
     	emit Transfer(_from, _to, _value);
     	if (balanceBook[from] < value) return false;
-    	balanceBook[_from] -= _value;
+        if (balanceBook[_to] + _value < balanceBook[_to]) return false;
+    	Transfer(_from, _to, _value);
+        balanceBook[_from] -= _value;
     	balanceBook[_to] += _value;
     	return true;
     }
@@ -48,8 +63,8 @@ contract Token is ERC20Interface {
     /// @param _value The amount of tokens to be approved for transfer
     /// @return Whether the approval was successful or not
     function approve(address _spender, uint256 _value) returns (bool success) {
-    	// ???????
-    	emit Approval(msg.sender, _spender, _value);
+    	require(_value > 0);
+    	Approval(msg.sender, _spender, _value);
     	return true;
     }
 
